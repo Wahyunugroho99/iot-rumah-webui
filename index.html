@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Smart Home Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Chart.js and annotation plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.3.0"></script>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+  <!-- Login Screen -->
+  <div id="login-screen" class="login-container">
+    <div class="login-box">
+      <div class="login-header">
+        <i class="fas fa-home-lg-alt"></i>
+        <h1>Smart Home</h1>
+        <p>Sistem Kontrol & Monitoring</p>
+      </div>
+      <form id="login-form">
+        <div class="input-group">
+          <i class="fas fa-user"></i>
+          <input type="text" id="username" placeholder="Username" required autocomplete="username" />
+        </div>
+        <div class="input-group">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="password" placeholder="Password" required autocomplete="current-password" />
+        </div>
+        <button type="submit" class="btn-login">
+          <i class="fas fa-sign-in-alt"></i> Masuk
+        </button>
+        <div id="login-error" class="error-message"></div>
+      </form>
+      <div class="login-footer">
+        <small>paswordnya apa hayo</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Dashboard (hidden by default) -->
+  <div id="dashboard" class="dashboard-hidden">
+    <header>
+      <div class="header-left">
+        <i class="fas fa-home"></i>
+        <h1>Smart Home Dashboard</h1>
+      </div>
+      <div class="header-right">
+        <div id="status-connection">
+          <i class="fas fa-circle"></i>
+          <span id="conn">—</span>
+        </div>
+        <div class="user-info">
+          <i class="fas fa-user-circle"></i>
+          <span id="current-user">User</span>
+          <button id="logout-btn" class="btn-logout">
+            <i class="fas fa-sign-out-alt"></i> Keluar
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="row">
+        <div class="card sensors">
+          <h2><i class="fas fa-cloud-sun"></i> Environment</h2>
+          <div class="sensor-grid">
+            <div class="sensor">
+              <div class="sensor-icon temp">
+                <i class="fas fa-temperature-half"></i>
+              </div>
+              <h3>DHT Sensor</h3>
+              <div class="sensor-values">
+                <p><i class="fas fa-thermometer-half"></i> Temp: <span id="temp" class="value">—</span> °C</p>
+                <p><i class="fas fa-droplet"></i> Hum: <span id="hum" class="value">—</span> %</p>
+              </div>
+              <div class="chart-small" style="height:220px;margin-top:12px;">
+                <canvas id="chart-dht"></canvas>
+              </div>
+            </div>
+            <div class="sensor">
+              <div class="sensor-icon gas">
+                <i class="fas fa-wind"></i>
+              </div>
+              <h3>Gas Sensor</h3>
+              <div class="sensor-values">
+                <p><i class="fas fa-gauge"></i> Value: <span id="gas" class="value">—</span></p>
+                <p><i class="fas fa-shield-halved"></i> Status: <span id="gas-status" class="value">—</span></p>
+              </div>
+              <div class="chart-small" style="height:160px;margin-top:12px;">
+                <canvas id="chart-gas"></canvas>
+              </div>
+            </div>
+            <div class="sensor">
+              <div class="sensor-icon rfid">
+                <i class="fas fa-id-card"></i>
+              </div>
+              <h3>RFID Access</h3>
+              <div class="sensor-values">
+                <p><i class="fas fa-hashtag"></i> UID: <span id="rfid-uid" class="value">—</span></p>
+                <p><i class="fas fa-check-circle"></i> Auth: <span id="rfid-auth" class="value">—</span></p>
+                <p><i class="fas fa-clock"></i> Last: <span id="rfid-last" class="value">—</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card camera">
+          <h2><i class="fas fa-video"></i> Camera Monitor</h2>
+          <div class="camera-preview">
+            <img id="cam-preview" alt="camera preview" src="" />
+          </div>
+          <div class="camera-controls">
+            <button id="btn-snap" class="btn-primary">
+              <i class="fas fa-camera"></i> Ambil Foto & Kirim Telegram
+            </button>
+            <button id="btn-refresh" class="btn-secondary">
+              <i class="fas fa-rotate"></i> Refresh Preview
+            </button>
+          </div>
+          <div id="last-photo">
+            <i class="fas fa-image"></i> Last photo: 
+            <a id="last-photo-link" href="#" target="_blank">—</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="row">
+        <div class="card relays">
+          <h2><i class="fas fa-lightbulb"></i> Relay Control</h2>
+          <div class="relay-grid">
+            <div class="relay">
+              <div class="relay-header">
+                <i class="fas fa-bed"></i>
+                <h3>Relay 1</h3>
+              </div>
+              <p class="relay-label">Kamar 1</p>
+              <label class="switch">
+                <input id="relay-1" type="checkbox" />
+                <span class="slider"></span>
+              </label>
+              <span class="relay-status" id="relay-1-status">OFF</span>
+            </div>
+            <div class="relay">
+              <div class="relay-header">
+                <i class="fas fa-couch"></i>
+                <h3>Relay 2</h3>
+              </div>
+              <p class="relay-label">Kamar 2</p>
+              <label class="switch">
+                <input id="relay-2" type="checkbox" />
+                <span class="slider"></span>
+              </label>
+              <span class="relay-status" id="relay-2-status">OFF</span>
+            </div>
+            <div class="relay">
+              <div class="relay-header">
+                <i class="fas fa-kitchen-set"></i>
+                <h3>Relay 3</h3>
+              </div>
+              <p class="relay-label">Kamar 3</p>
+              <label class="switch">
+                <input id="relay-3" type="checkbox" />
+                <span class="slider"></span>
+              </label>
+              <span class="relay-status" id="relay-3-status">OFF</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card door">
+          <h2><i class="fas fa-door-open"></i> Pintu Utama</h2>
+          <div class="door-status">
+            <div class="servo-indicator">
+              <i class="fas fa-circle-notch"></i>
+              <span id="servo-angle" class="angle-value">—</span>
+              <span class="angle-unit">°</span>
+            </div>
+          </div>
+          <div class="door-controls">
+            <button id="open-door" class="btn-success">
+              <i class="fas fa-lock-open"></i> Buka Pintu
+            </button>
+            <button id="close-door" class="btn-danger">
+              <i class="fas fa-lock"></i> Tutup Pintu
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      <i class="fas fa-microchip"></i>
+      <small>dasbord josjis</small>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
