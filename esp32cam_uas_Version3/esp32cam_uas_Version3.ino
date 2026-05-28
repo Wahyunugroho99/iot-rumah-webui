@@ -20,8 +20,8 @@
 // ----- CONFIG -----
 const char* WIFI_SSID = "Eben";
 const char* WIFI_PASS = "yyyyyyyy";
-String BOT_TOKEN = "8505511140:AAHx9ttJyBo7uVVCy6qg0DnPSyaHu0X2erM";
-String CHAT_ID = "8123333531";
+String BOT_TOKEN = "";
+String CHAT_ID = "";
 
 #define LED_WIFI 33
 
